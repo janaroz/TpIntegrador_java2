@@ -20,6 +20,10 @@ public class UserServiceImpl implements UserService {
 
     public UserDTO createUser(UserDTO dto) {
         User user = mapper.toEntity(dto, User.class);
+        if (repo.existsByUsername(user.getUsername())) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+        repo.save(user);
         return mapper.toDTO(user, UserDTO.class);
     }
     public UserDTO getUserById(String id) {
@@ -33,8 +37,8 @@ public class UserServiceImpl implements UserService {
             .map(user -> mapper.toDTO(user, UserDTO.class))
             .collect(toList());
     }
-    public UserDTO updateUser(String id, UserDTO dto) {
-        return repo.findById(id).map(u -> {
+    public UserDTO updateUser(UserDTO dto) {
+        return repo.findById(dto.getId()).map(u -> {
             u.setFullName(dto.getFullName());
             u.setProfileImageUrl(dto.getProfileImageUrl());
             u.setEmail(dto.getEmail());

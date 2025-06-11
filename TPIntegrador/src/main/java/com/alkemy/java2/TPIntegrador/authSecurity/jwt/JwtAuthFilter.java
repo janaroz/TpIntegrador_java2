@@ -30,6 +30,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
   private static final Set<String> WHITELISTED_PATHS = Set.of(
       "/swagger-ui", "/v3/api-docs", "/api-docs", "/favicon.ico"
+          ,"/api/auth/register", "/api/auth/login"
   );
 
   @Override

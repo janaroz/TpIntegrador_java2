@@ -14,12 +14,12 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Slf4j
-public class UserLogInDTO {
+public class UserRegisterDTO {
     private String id;
-    private String name;
+    private String fullName;
     private String username;
     private String email;
     private String password;
     private Set<Role> role;
-
+    private String profileImageUrl;
 }

@@ -29,6 +29,11 @@ public class DataLoaderConfig implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        // Si ya hay datos, no hacer nada
+        if (userRepository.count() > 0 || groupRepository.count() > 0 || eventRepository.count() > 0) {
+            log.info("Ya existen datos en la base. No se cargan datos de ejemplo.");
+            return;
+        }
         log.info("Eliminando datos previos...");
         userRepository.deleteAll();
         groupRepository.deleteAll();

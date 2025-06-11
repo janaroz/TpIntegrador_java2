@@ -3,7 +3,7 @@ package com.alkemy.java2.TPIntegrador.authSecurity.service;
 
 import com.alkemy.java2.TPIntegrador.DTOs.AuthRequest;
 import com.alkemy.java2.TPIntegrador.DTOs.AuthResponse;
-import com.alkemy.java2.TPIntegrador.DTOs.UserLogInDTO;
+import com.alkemy.java2.TPIntegrador.DTOs.UserRegisterDTO;
 import com.alkemy.java2.TPIntegrador.mappers.GenericMapper;
 import com.alkemy.java2.TPIntegrador.model.User;
 import com.alkemy.java2.TPIntegrador.repository.UserRepository;
@@ -31,14 +31,14 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public AuthResponse register(UserLogInDTO request) {
+    public AuthResponse register(UserRegisterDTO request) {
         log.debug("Intentando registrar nuevo usuario: {}", request.getUsername());
 
 
         // Changed to use our custom exists method
         if (userRepository.existsByUsername(request.getUsername())) {
             log.warn("Username {} already exists", request.getUsername());
-            //throw new UserAlreadyExistsException("Username already exists");
+            //throw new IllegalArgumentException("Username already exists");
         }
         User user = genericMapper.toEntity(request, User.class);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));

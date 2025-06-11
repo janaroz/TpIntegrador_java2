@@ -21,9 +21,9 @@ public class UserController {
     @GetMapping
     public List<UserDTO> all() { return svc.getAllUsers(); }
 
-    @PutMapping("/{id}")
-    public UserDTO update(@PathVariable String id, @RequestBody UserDTO dto) {
-        return svc.updateUser(id, dto);
+    @PutMapping("/")
+    public UserDTO update( @RequestBody UserDTO dto) {
+        return svc.updateUser( dto);
     }
 
     @DeleteMapping("/{id}")
