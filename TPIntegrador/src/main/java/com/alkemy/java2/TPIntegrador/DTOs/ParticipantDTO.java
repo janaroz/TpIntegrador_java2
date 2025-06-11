@@ -1,4 +1,5 @@
 package com.alkemy.java2.TPIntegrador.DTOs;
+import com.alkemy.java2.TPIntegrador.model.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ParticipantDTO {
     private String userId;
-    private String status; // confirmed / pending / declined
+    private Status status; // confirmed / pending / declined
 }
 

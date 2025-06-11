@@ -9,6 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Document(collection = "events")
@@ -32,7 +34,7 @@ public class Event {
 
     private String location;
 
-    private Instant eventDate;
+    private LocalDateTime eventDate;
 
     private String organizerId;
 

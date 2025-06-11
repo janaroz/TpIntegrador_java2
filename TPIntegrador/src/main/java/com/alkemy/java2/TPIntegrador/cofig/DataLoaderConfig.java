@@ -86,7 +86,7 @@ public class DataLoaderConfig implements CommandLineRunner {
                 .description(description)
                 .groupId(group.getId())
                 .organizerId(organizer.getId())
-                .eventDate(dateTime.toInstant(ZoneOffset.UTC))
+                .eventDate(dateTime) // Corrección aquí
                 .createdAt(Instant.now())
                 .build();
         Event savedEvent = eventRepository.save(event);
