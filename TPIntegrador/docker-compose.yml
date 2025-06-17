@@ -10,34 +10,9 @@ services:
       - "9090:9090"
     networks:
       - spring-network
-    depends_on:
-      mongodb:
-        condition: service_healthy
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://user:pass@mongodb:27017/tienda?authSource=admin
-
-  mongodb:
-    image: mongodb/mongodb-atlas-local
-    environment:
-      - MONGODB_INITDB_ROOT_USERNAME=user
-      - MONGODB_INITDB_ROOT_PASSWORD=pass
-      - MONGO_INITDB_DATABASE=tienda
-    ports:
-      - 27019:27017
-    networks:
-      - spring-network
-    volumes:
-      - data:/data/db
-      - config:/data/configdb
-    healthcheck:
-      test: ["CMD", "mongosh", "-u", "user", "-p", "pass", "--eval", "db.adminCommand('ping')"]
-      interval: 5s
-      timeout: 30s
-      retries: 10
+      - SPRING_DATA_MONGODB_URI=mongodb+srv://root:root@cluster0.suv1fju.mongodb.net/PlanifyFriends?retryWrites=true&w=majority&appName=Cluster0
 
 networks:
   spring-network:
     driver: bridge
-volumes:
-  data:
-  config:
