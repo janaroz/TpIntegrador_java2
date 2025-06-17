@@ -1,4 +1,4 @@
-package com.alkemy.java2.TPIntegrador.cofig;
+package com.alkemy.java2.TPIntegrador.config;
 
 
 import org.modelmapper.ModelMapper;

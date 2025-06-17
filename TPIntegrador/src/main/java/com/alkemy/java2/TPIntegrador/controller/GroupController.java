@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/groups")
@@ -39,5 +40,15 @@ public class GroupController {
     public ResponseEntity<List<GroupDTO>> getAllGroups() {
         List<GroupDTO> groups = groupService.getAllGroups();
         return ResponseEntity.ok(groups);
+    }
+    @GetMapping("/async")
+    public CompletableFuture<ResponseEntity<List<GroupDTO>>> getAllGroupsAsync() {
+        return groupService.getAllGroupsAsync().thenApply(ResponseEntity::ok);
+    }
+
+    @PostMapping("/process")
+    public ResponseEntity<String> processGroups(@RequestBody List<String> ids) {
+        groupService.processMultipleGroups(ids);
+        return ResponseEntity.ok("Procesamiento en paralelo iniciado para " + ids.size() + " grupos.");
     }
 }

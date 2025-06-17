@@ -10,7 +10,6 @@ import lombok.Data;
 @Builder
 public class AuthRequest {
     @NotBlank
-    @Email
     private String username;
     @NotBlank
     @Size(min = 8, max = 20, message = "8 y 10 c")

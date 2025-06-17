@@ -18,6 +18,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j // Lombok annotation for logger
@@ -42,7 +44,9 @@ public class AuthServiceImpl implements AuthService {
         }
         User user = genericMapper.toEntity(request, User.class);
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
-        //user.setRoles(request.getRoles());
+        user.setRoles(request.getRole());
+        /*user.setRoles(List.of("ROLE_USER"));
+        User savedUser = userRepository.save(user);*/
 
         User savedUser = userRepository.save(user);
         log.info("Nuevo usuario registrado con ID: {}", savedUser.getId());
