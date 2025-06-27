@@ -9,8 +9,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "events")
@@ -42,8 +42,7 @@ public class Event {
     private Instant createdAt = Instant.now();
 
     @Builder.Default
-    private List<Participant> participants = List.of();
-
-
-
+    private List<Participant> participants = new ArrayList<>();
 }
+
+

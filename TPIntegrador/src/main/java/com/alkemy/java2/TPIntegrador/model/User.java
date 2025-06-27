@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,20 +47,18 @@ public class User implements UserDetails {
 
     private String profileImageUrl;
 
+    private List<String> groupIds;
+
     private boolean active = true;
 
-    // SET: PORQUE?
-    @Field("roles") // no se tienen relaciones de tablas pero sis e tienen campos anidados.
-    private Set<Role> roles = new HashSet<>(); // Inicialización directa
-
+    @Field("roles")
+    private Set<Role> roles = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.name()))
                 .collect(Collectors.toSet());
-        // que lo levante como rol.
-        // volver a ponerlo en colection.
     }
 
     @Override
@@ -67,24 +66,29 @@ public class User implements UserDetails {
         return passwordHash;
     }
 
+    // Refactor para evitar duplicación
+    private boolean isUserActive() {
+        return active;
+    }
+
     @Override
     public boolean isAccountNonExpired() {
-        return active;
+        return isUserActive();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return active;
+        return isUserActive();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return active;
+        return isUserActive();
     }
 
     @Override
     public boolean isEnabled() {
-        return active;
+        return isUserActive();
     }
 
     @Builder.Default

@@ -1,4 +1,3 @@
-// src/main/java/com/alkemy/java2/TPIntegrador/controller/GroupController.java
 package com.alkemy.java2.TPIntegrador.controller;
 
 import com.alkemy.java2.TPIntegrador.DTOs.GroupDTO;

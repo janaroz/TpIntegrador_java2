@@ -4,7 +4,6 @@ import com.alkemy.java2.TPIntegrador.DTOs.EventDTO;
 import com.alkemy.java2.TPIntegrador.DTOs.ParticipantDTO;
 import com.alkemy.java2.TPIntegrador.service.EventService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

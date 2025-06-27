@@ -1,7 +1,7 @@
 package com.alkemy.java2.TPIntegrador.config;
 
-import com.alkemy.java2.TPIntegrador.authSecurity.service.AuthServiceImpl;
 import com.alkemy.java2.TPIntegrador.DTOs.UserRegisterDTO;
+import com.alkemy.java2.TPIntegrador.authSecurity.service.AuthServiceImpl;
 import com.alkemy.java2.TPIntegrador.model.Event;
 import com.alkemy.java2.TPIntegrador.model.Group;
 import com.alkemy.java2.TPIntegrador.model.User;
@@ -17,7 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
