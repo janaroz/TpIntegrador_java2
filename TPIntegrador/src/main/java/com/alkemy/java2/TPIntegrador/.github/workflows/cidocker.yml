@@ -2,9 +2,9 @@ name: CI/CD Pipeline Docker(Build, Test & Verify)
 
 on:
   push:
-    branches: [ "cicd" ]
+    branches: [ "CI-CD" ]
   pull_request:
-    branches: [ "cicd" ]
+    branches: [ "CI-CD" ]
  #.
 env:
   IMAGE_NAME: spring-api-image
