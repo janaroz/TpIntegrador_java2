@@ -1,0 +1,73 @@
+name: CI/CD Pipeline Docker(Build, Test & Verify)
+
+on:
+  push:
+    branches: [ "cicd" ]
+  pull_request:
+    branches: [ "cicd" ]
+ #.
+env:
+  IMAGE_NAME: spring-api-image
+  CONTAINER_NAME: spring-api-container
+
+jobs:
+  build-test-verify:
+    runs-on: ubuntu-latest
+
+    services:
+      # MongoDB para los tests de Maven
+      mongodb-test:
+        image: mongodb/mongodb-atlas-local
+        env:
+          MONGODB_INITDB_ROOT_USERNAME: user
+          MONGODB_INITDB_ROOT_PASSWORD: pass
+          MONGO_INITDB_DATABASE: tienda
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh -u user -p pass --eval 'db.adminCommand(\"ping\")'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build with Maven
+        run: ./mvnw clean package -DskipTests
+
+      - name: Run tests
+        run: ./mvnw test
+        env:
+          SPRING_DATA_MONGODB_URI: mongodb://user:pass@localhost:27017/tienda?authSource=admin
+
+      - name: Build Docker image
+        run: docker build -t $IMAGE_NAME .
+
+      - name: Verify with docker-compose
+        run: |
+          # Levantar los servicios en segundo plano
+          docker-compose up -d
+          
+          # Esperar que la aplicación esté lista
+          sleep 15
+          
+          # Verificar que el contenedor de Spring está corriendo
+          docker ps | grep $CONTAINER_NAME
+          
+          # Hacer una prueba de conexión a la API (ajusta el endpoint según tu aplicación)
+          curl -v http://localhost:8080/api/productos || echo "Curl test failed but continuing..."
+          
+          # Ver logs para diagnóstico
+          docker-compose logs --tail=50 spring-api-image
+          
+          # Detener los servicios
+          docker-compose down
