@@ -45,7 +45,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDTO getEventById(String id) {
-        log.info("[GET] Buscando evento por ID: {}", id);
+        String safeId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(id);
+        log.info("[GET] Buscando evento por ID: {}", safeId);
         return repo.findById(id)
                 .map(event -> {
                     log.info("[GET] Evento encontrado: {}", event.getTitle());
@@ -56,7 +57,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<EventDTO> getEventsByGroup(String groupId) {
-        log.info("[GROUP] Buscando eventos del grupo: {}", groupId);
+        String safeGroupId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(groupId);
+        log.info("[GROUP] Buscando eventos del grupo: {}", safeGroupId);
         List<EventDTO> result = repo.findByGroupId(groupId)
                 .stream()
                 .map(event -> mapper.toDTO(event, EventDTO.class))
@@ -68,20 +70,22 @@ public class EventServiceImpl implements EventService {
     @Override
     public CompletableFuture<List<EventDTO>> getEventsByGroupAsync(String groupId) {
         SecurityContext context = SecurityContextHolder.getContext();
+        String safeGroupId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(groupId);
 
-        log.info("[ASYNC] Iniciando búsqueda async para grupo: {}", groupId);
+        log.info("[ASYNC] Iniciando búsqueda async para grupo: {}", safeGroupId);
         return CompletableFuture.supplyAsync(() -> {
             SecurityContextHolder.setContext(context);
             log.info("[ASYNC] Ejecutando en hilo: {}", Thread.currentThread().getName());
             List<EventDTO> eventos = getEventsByGroup(groupId);
-            log.info("[ASYNC] Completado para grupo: {}", groupId);
+            log.info("[ASYNC] Completado para grupo: {}", safeGroupId);
             return eventos;
         }, executor);
     }
 
     @Override
     public List<EventDTO> getEventsByCreator(String creatorId) {
-        log.info("[CREATOR] Buscando eventos creados por usuario: {}", creatorId);
+        String safeCreatorId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(creatorId);
+        log.info("[CREATOR] Buscando eventos creados por usuario: {}", safeCreatorId);
         List<EventDTO> result = repo.findByCreatorId(creatorId)
                 .stream()
                 .map(event -> mapper.toDTO(event, EventDTO.class))
@@ -92,7 +96,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventDTO updateEvent(String id, EventDTO dto) {
-        log.info("[UPDATE] Buscando evento para actualizar: {}", id);
+        String safeId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(id);
+        log.info("[UPDATE] Buscando evento para actualizar: {}", safeId);
         return repo.findById(id).map(e -> {
             e.setTitle(dto.getTitle());
             e.setDescription(dto.getDescription());
@@ -106,14 +111,16 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void deleteEvent(String id) {
-        log.info("[DELETE] Eliminando evento con ID: {}", id);
+        String safeId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(id);
+        log.info("[DELETE] Eliminando evento con ID: {}", safeId);
         repo.deleteById(id);
         log.info("[DELETE] Evento eliminado.");
     }
 
     @Override
     public EventDTO addParticipant(String id, ParticipantDTO p) {
-        log.info("[PARTICIPANT] Agregando participante al evento: {}", id);
+        String safeId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(id);
+        log.info("[PARTICIPANT] Agregando participante al evento: {}", safeId);
         return repo.findById(id).map(e -> {
             List<Participant> participantes =
                     e.getParticipants() == null ? new ArrayList<>() : new ArrayList<>(e.getParticipants());
@@ -132,10 +139,11 @@ public class EventServiceImpl implements EventService {
     public void processEventsByMultipleGroups(List<String> groupIds) {
         log.info("[PROCESS] Procesando múltiples grupos...");
         for (String groupId : groupIds) {
+            String safeGroupId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(groupId);
             executor.submit(() -> {
-                log.info("[PROCESS] Iniciando grupo: {} en hilo: {}", groupId, Thread.currentThread().getName());
+                log.info("[PROCESS] Iniciando grupo: {} en hilo: {}", safeGroupId, Thread.currentThread().getName());
                 List<EventDTO> eventos = getEventsByGroup(groupId);
-                log.info("[PROCESS] Grupo {} tiene {} eventos.", groupId, eventos.size());
+                log.info("[PROCESS] Grupo {} tiene {} eventos.", safeGroupId, eventos.size());
             });
         }
         log.info("[PROCESS] Envío de tareas al pool completado.");

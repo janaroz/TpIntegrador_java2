@@ -38,28 +38,30 @@ public class GroupServiceImpl implements GroupService {
     public GroupDTO createGroup(GroupDTO groupDTO) {
         Group group = genericMapper.toEntity(groupDTO, Group.class);
         group = groupRepository.save(group);
-        log.info("[CREATE] Grupo creado con ID: {}", group.getId());
+        log.info("[CREATE] Grupo creado con ID: {}", com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(group.getId()));
         return genericMapper.toDTO(group, GroupDTO.class);
     }
 
     @Override
     public GroupDTO getGroupById(String id) {
+        String safeId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(id);
         return groupRepository.findById(id)
                 .map(group -> {
-                    log.info("[GET] Grupo obtenido: {}", group.getName());
+                    log.info("[GET] Grupo obtenido: {} (ID: {})", group.getName(), safeId);
                     return genericMapper.toDTO(group, GroupDTO.class);
                 }).orElse(null);
     }
 
     @Override
     public List<GroupDTO> getAllGroups() {
-        return groupRepository.findAll()
+        List<GroupDTO> result = groupRepository.findAll()
                 .stream()
                 .map(group -> genericMapper.toDTO(group, GroupDTO.class))
                 .collect(Collectors.toList());
+        log.info("[LIST] Se encontraron {} grupos", result.size());
+        return result;
     }
 
-    // ✅ Async usando CompletableFuture
     public CompletableFuture<List<GroupDTO>> getAllGroupsAsync() {
         log.info("[ASYNC] getAllGroupsAsync iniciado");
         return CompletableFuture.supplyAsync(() -> {
@@ -70,17 +72,17 @@ public class GroupServiceImpl implements GroupService {
         }, executor);
     }
 
-    // ✅ Procesamiento en paralelo de grupos
     public void processMultipleGroups(List<String> ids) {
         log.info("[THREAD] Procesando grupos en paralelo");
         for (String id : ids) {
+            String safeId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(id);
             executor.submit(() -> {
-                log.info("[THREAD] Buscando grupo: {} en hilo: {}", id, Thread.currentThread().getName());
+                log.info("[THREAD] Buscando grupo: {} en hilo: {}", safeId, Thread.currentThread().getName());
                 GroupDTO group = getGroupById(id);
                 if (group != null) {
-                    log.info("[THREAD] Grupo {}: {}", id, group.getName());
+                    log.info("[THREAD] Grupo {}: {}", safeId, group.getName());
                 } else {
-                    log.warn("[THREAD] Grupo {} no encontrado", id);
+                    log.warn("[THREAD] Grupo {} no encontrado", safeId);
                 }
             });
         }
@@ -88,6 +90,8 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public GroupDTO addMemberToGroup(String groupId, UserDTO userDTO) {
+        String safeGroupId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(groupId);
+        String safeUserId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(userDTO.getId());
         Optional<Group> groupOpt = groupRepository.findById(groupId);
         if (groupOpt.isPresent()) {
             Group group = groupOpt.get();
@@ -96,7 +100,7 @@ public class GroupServiceImpl implements GroupService {
             memberIds.add(userDTO.getId());
             group.setMemberIds(memberIds);
             group = groupRepository.save(group);
-            log.info("[MEMBER] Agregado {} al grupo {}", userDTO.getId(), groupId);
+            log.info("[MEMBER] Agregado {} al grupo {}", safeUserId, safeGroupId);
             return genericMapper.toDTO(group, GroupDTO.class);
         }
         return null;

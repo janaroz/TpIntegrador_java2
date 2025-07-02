@@ -37,45 +37,54 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Username already exists");
         }
         repo.save(user);
+        String safeId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(user.getId());
+        log.info("[CREATE] Usuario creado con ID: {}", safeId);
         return mapper.toDTO(user, UserDTO.class);
     }
 
     @Override
     public UserDTO getUserById(String id) {
+        String safeId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(id);
         return repo.findById(id)
-                .map(user -> mapper.toDTO(user, UserDTO.class))
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+                .map(user -> {
+                    log.info("[GET] Usuario encontrado: {} (ID: {})", user.getUsername(), safeId);
+                    return mapper.toDTO(user, UserDTO.class);
+                })
+                .orElseThrow(() -> new com.alkemy.java2.TPIntegrador.exceptions.ResourceNotFoundException("Usuario no encontrado con id: " + safeId));
     }
 
     @Override
     public List<UserDTO> getAllUsers() {
-        return repo.findAll()
+        List<UserDTO> result = repo.findAll()
                 .stream()
                 .map(user -> mapper.toDTO(user, UserDTO.class))
                 .collect(toList());
+        log.info("[LIST] Total usuarios: {}", result.size());
+        return result;
     }
 
-    // ✅ Versión async
     @Override
     public CompletableFuture<List<UserDTO>> getAllUsersAsync() {
         log.info("[ASYNC] Ejecutando getAllUsersAsync");
         return CompletableFuture.supplyAsync(() -> {
             log.info("[ASYNC] Hilo: {}", Thread.currentThread().getName());
-            return getAllUsers();
+            List<UserDTO> result = getAllUsers();
+            log.info("[ASYNC] Finalizado con {} usuarios", result.size());
+            return result;
         }, executor);
     }
 
-    // ✅ Procesamiento paralelo
     @Override
     public void processUsersByIdList(List<String> ids) {
         log.info("[THREAD] Iniciando procesamiento paralelo de usuarios");
         for (String id : ids) {
+            String safeId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(id);
             executor.submit(() -> {
                 try {
                     UserDTO user = getUserById(id);
-                    log.info("[THREAD] Usuario procesado: {} - {}", id, user.getUsername());
+                    log.info("[THREAD] Usuario procesado: {} - {}", safeId, user.getUsername());
                 } catch (ResourceNotFoundException e) {
-                    log.warn("[THREAD] Usuario no encontrado: {}", id);
+                    log.warn("[THREAD] Usuario no encontrado: {}", safeId);
                 }
             });
         }
@@ -83,17 +92,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(UserDTO dto) {
+        String safeId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(dto.getId());
         return repo.findById(dto.getId()).map(u -> {
             u.setFullName(dto.getFullName());
             u.setProfileImageUrl(dto.getProfileImageUrl());
             u.setEmail(dto.getEmail());
-            return mapper.toDTO(repo.save(u), UserDTO.class);
+            UserDTO updated = mapper.toDTO(repo.save(u), UserDTO.class);
+            log.info("[UPDATE] Usuario actualizado con ID: {}", safeId);
+            return updated;
         }).orElse(null);
     }
 
     @Override
     public void deleteUser(String id) {
+        String safeId = com.alkemy.java2.TPIntegrador.util.LogSanitizer.sanitize(id);
         repo.deleteById(id);
+        log.info("[DELETE] Usuario eliminado con ID: {}", safeId);
     }
 
     @PreDestroy

@@ -21,8 +21,8 @@
 		<java.version>17</java.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<jjwt.version>0.12.6</jjwt.version>
-		<sonar.projectKey>janaroz</sonar.projectKey>
-		<sonar.projectName>AlkemyJava2Clase14</sonar.projectName>
+		<sonar.projectKey>janaroz2</sonar.projectKey>
+		<sonar.projectName>TpIntegrador_java2</sonar.projectName>
 		<sonar.java.binaries>target/classes</sonar.java.binaries>
 		<sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
 		<sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
